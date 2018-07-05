@@ -17,7 +17,8 @@ public class SearchVolumeEstimateController {
     private final String KEYWORD_KEY = "keyword";
     private final String SCORE_KEY = "score";
 
-    @Autowired SearchVolumeEstimatingService searchVolumeEstimatingService;
+    @Autowired
+    SearchVolumeEstimatingService searchVolumeEstimatingService;
 
     @GetMapping("/estimate")
     @ResponseBody
