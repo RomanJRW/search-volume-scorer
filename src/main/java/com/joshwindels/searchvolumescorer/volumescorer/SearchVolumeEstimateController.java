@@ -2,7 +2,6 @@ package com.joshwindels.searchvolumescorer.volumescorer;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,32 +12,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class VolumeScoringController {
+public class SearchVolumeEstimateController {
 
-
-    private final int SEARCH_DEPTH = 2;
     private final String KEYWORD_KEY = "keyword";
     private final String SCORE_KEY = "score";
 
-    @Autowired
-    ResultBuildingService resultBuildingService;
-
-    @Autowired
-    ScoringService scoringService;
+    @Autowired SearchVolumeScoringService searchVolumeScoringService;
 
     @GetMapping("/estimate")
     @ResponseBody
-    public Map<String, Object> estimateScoreForKeyword(@RequestParam String keyword) {
-        List<SearchResult> searchResults
-                = resultBuildingService.getResultsTreeForKeywordWithDepth(keyword, SEARCH_DEPTH);
-        int keywordScore = scoringService.getLeafCountScoreFromResults(searchResults);
-        return createKeywordAndScoreMap(keyword, keywordScore);
+    public Map<String, Object> estimateSearchVolumeScoreForKeyword(@RequestParam String keyword) {
+        int estimatedScore = searchVolumeScoringService.calculateScoreForKeyword(keyword);
+        return createKeywordAndScoreMap(keyword, estimatedScore);
     }
 
-    private Map<String, Object> createKeywordAndScoreMap(String keyword, int keywordScore) {
+    private Map<String, Object> createKeywordAndScoreMap(String keyword, int estimatedSearchScore) {
         Map<String, Object> results = new LinkedHashMap<>();
         results.put(KEYWORD_KEY, keyword);
-        results.put(SCORE_KEY, keywordScore);
+        results.put(SCORE_KEY, estimatedSearchScore);
         return results;
     }
 
