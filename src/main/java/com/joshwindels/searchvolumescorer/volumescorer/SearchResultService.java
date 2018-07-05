@@ -3,7 +3,6 @@ package com.joshwindels.searchvolumescorer.volumescorer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,22 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class SearchVolumeScoringService {
+public class SearchResultService {
 
     private final String AMAZON_AUTOCOMPLETE_URL
             = "http://completion.amazon.com/search/complete?search-alias=aps&client=amazon-search-ui&mkt=1&q=";
 
-    public int calculateScoreForKeyword(String keyword) {
-        List<String> termsFound = getSearchResultForKeyword(keyword).getSuggestedTerms()
-                .stream()
-                .map(this::getSearchResultForKeyword)
-                .map(SearchResult::getSuggestedTerms)
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-        return termsFound.size();
-    }
-
-    private SearchResult getSearchResultForKeyword(String keyword) {
+    public SearchResult getSearchResultForKeyword(String keyword) {
         ResponseEntity<String> response = getResponseFromKeywordRequest(keyword);
         return new SearchResult(getSearchTermFromResponse(response), getSuggestedTermsFromResponse(response));
     }

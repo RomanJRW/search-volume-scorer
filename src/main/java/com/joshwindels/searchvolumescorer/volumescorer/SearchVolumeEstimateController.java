@@ -17,12 +17,12 @@ public class SearchVolumeEstimateController {
     private final String KEYWORD_KEY = "keyword";
     private final String SCORE_KEY = "score";
 
-    @Autowired SearchVolumeScoringService searchVolumeScoringService;
+    @Autowired SearchVolumeEstimatingService searchVolumeEstimatingService;
 
     @GetMapping("/estimate")
     @ResponseBody
     public Map<String, Object> estimateSearchVolumeScoreForKeyword(@RequestParam String keyword) {
-        int estimatedScore = searchVolumeScoringService.calculateScoreForKeyword(keyword);
+        int estimatedScore = searchVolumeEstimatingService.calculateScoreForKeyword(keyword);
         return createKeywordAndScoreMap(keyword, estimatedScore);
     }
 
