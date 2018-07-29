@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SearchVolumeEstimatingService {
+public class ScoreCalculatingService {
 
     @Autowired
     SearchResultService searchResultService;
 
-    public int calculateScoreForKeyword(String keyword) {
+    public int calculateNetworkScoreForKeyword(String keyword) {
         List<String> termsFound = searchResultService.getSearchResultForKeyword(keyword).getSuggestedTerms()
                 .stream()
                 .map(term -> searchResultService.getSearchResultForKeyword(term))

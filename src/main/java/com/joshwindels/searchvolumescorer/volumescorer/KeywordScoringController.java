@@ -12,18 +12,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class SearchVolumeEstimateController {
+public class KeywordScoringController {
 
     private final String KEYWORD_KEY = "keyword";
     private final String SCORE_KEY = "score";
 
-    @Autowired
-    SearchVolumeEstimatingService searchVolumeEstimatingService;
+    @Autowired ScoreCalculatingService scoreCalculatingService;
 
-    @GetMapping("/estimate")
+    @GetMapping("/network")
     @ResponseBody
-    public Map<String, Object> estimateSearchVolumeScoreForKeyword(@RequestParam String keyword) {
-        int estimatedScore = searchVolumeEstimatingService.calculateScoreForKeyword(keyword);
+    public Map<String, Object> getNetworkScoreForKeyword(@RequestParam String keyword) {
+        int estimatedScore = scoreCalculatingService.calculateNetworkScoreForKeyword(keyword);
         return createKeywordAndScoreMap(keyword, estimatedScore);
     }
 

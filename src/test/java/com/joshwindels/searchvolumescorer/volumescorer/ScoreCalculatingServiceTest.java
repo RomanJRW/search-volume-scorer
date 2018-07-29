@@ -12,18 +12,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SearchVolumeEstimatingServiceTest {
+public class ScoreCalculatingServiceTest {
 
     private static final String KEYWORD = "linux";
 
     @Mock
     SearchResultService searchResultService;
 
-    @InjectMocks
-    SearchVolumeEstimatingService searchVolumeEstimatingService;
+    @InjectMocks ScoreCalculatingService scoreCalculatingService;
 
     @Test
-    public void givenKeyword_whenCalculatingScore_thenScoreIsReturned() {
+    public void givenKeyword_whenCalculatingNetworkScore_thenScoreIsReturned() {
         String SUGGESTED_TERM_A = "linux computer";
         String SUGGESTED_TERM_B = "linux book";
         SearchResult initialSearchResult = new SearchResult(KEYWORD, Arrays.asList(SUGGESTED_TERM_A, SUGGESTED_TERM_B));
@@ -36,21 +35,21 @@ public class SearchVolumeEstimatingServiceTest {
         when(searchResultService.getSearchResultForKeyword(SUGGESTED_TERM_A)).thenReturn(secondarySearchResultA);
         when(searchResultService.getSearchResultForKeyword(SUGGESTED_TERM_B)).thenReturn(secondarySearchResultB);
 
-        int actualScore = searchVolumeEstimatingService.calculateScoreForKeyword(KEYWORD);
+        int actualScore = scoreCalculatingService.calculateNetworkScoreForKeyword(KEYWORD);
 
         assertEquals(4, actualScore);
     }
 
     @Test(expected = NullPointerException.class)
-    public void givenNullKeyword_whenCalculatingScore_thenNullPointerExceptionThrown() {
-        searchVolumeEstimatingService.calculateScoreForKeyword(null);
+    public void givenNullKeyword_whenCalculatingNetworkScore_thenNullPointerExceptionThrown() {
+        scoreCalculatingService.calculateNetworkScoreForKeyword(null);
     }
 
     @Test(expected = RuntimeException.class)
-    public void givenKeyword_whenCalculatingScoreAndSearchResultServiceThrowsRuntimeException_thenRuntimeExceptionThrown() {
+    public void givenKeyword_whenCalculatingNetworkScoreAndSearchResultServiceThrowsRuntimeException_thenRuntimeExceptionThrown() {
         when(searchResultService.getSearchResultForKeyword(KEYWORD)).thenThrow(RuntimeException.class);
 
-        searchVolumeEstimatingService.calculateScoreForKeyword(KEYWORD);
+        scoreCalculatingService.calculateNetworkScoreForKeyword(KEYWORD);
     }
 
 }
