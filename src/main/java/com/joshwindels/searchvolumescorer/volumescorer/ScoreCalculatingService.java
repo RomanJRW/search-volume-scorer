@@ -22,4 +22,17 @@ public class ScoreCalculatingService {
         return termsFound.size();
     }
 
+    public int calculateSearchVolumeScoreForKeyword(String keyword) {
+        double lengthWeighting = 100.00 / keyword.length();
+        double searchVolumeScore = 0;
+
+        SearchResult initialResult = searchResultService.getSearchResultForKeyword(keyword);
+        List<String> terms = initialResult.getSuggestedTerms();
+        if (terms.contains(initialResult.getSearchTerm())) {
+            double indexMultiplier = (10 - terms.indexOf(initialResult.getSearchTerm())) / 10;
+            searchVolumeScore += lengthWeighting * indexMultiplier;
+        }
+
+        return (int) Math.round(searchVolumeScore);
+    }
 }

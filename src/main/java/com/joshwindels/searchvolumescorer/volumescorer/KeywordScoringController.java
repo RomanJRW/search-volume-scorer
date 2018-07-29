@@ -22,7 +22,14 @@ public class KeywordScoringController {
     @GetMapping("/network")
     @ResponseBody
     public Map<String, Object> getNetworkScoreForKeyword(@RequestParam String keyword) {
-        int estimatedScore = scoreCalculatingService.calculateNetworkScoreForKeyword(keyword);
+        int networkScore = scoreCalculatingService.calculateNetworkScoreForKeyword(keyword);
+        return createKeywordAndScoreMap(keyword, networkScore);
+    }
+
+    @GetMapping("/estimate")
+    @ResponseBody
+    public Map<String, Object> getSearchVolumeScoreForKeyword(@RequestParam String keyword) {
+        int estimatedScore = scoreCalculatingService.calculateSearchVolumeScoreForKeyword(keyword);
         return createKeywordAndScoreMap(keyword, estimatedScore);
     }
 
