@@ -12,16 +12,6 @@ public class ScoreCalculatingService {
     @Autowired
     SearchResultService searchResultService;
 
-    public int calculateNetworkScoreForKeyword(String keyword) {
-        List<String> termsFound = searchResultService.getSearchResultForKeyword(keyword).getSuggestedTerms()
-                .stream()
-                .map(term -> searchResultService.getSearchResultForKeyword(term))
-                .map(SearchResult::getSuggestedTerms)
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-        return termsFound.size();
-    }
-
     public int calculateSearchVolumeScoreForKeyword(String keyword) {
         double keywordLengthWeighting = 100.00 / keyword.length();
 
@@ -39,4 +29,15 @@ public class ScoreCalculatingService {
         }
         return (int) Math.round(searchVolumeScore);
     }
+
+    public int calculateNetworkScoreForKeyword(String keyword) {
+        List<String> termsFound = searchResultService.getSearchResultForKeyword(keyword).getSuggestedTerms()
+                .stream()
+                .map(term -> searchResultService.getSearchResultForKeyword(term))
+                .map(SearchResult::getSuggestedTerms)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        return termsFound.size();
+    }
+
 }

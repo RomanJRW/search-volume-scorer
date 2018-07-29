@@ -19,18 +19,18 @@ public class KeywordScoringController {
 
     @Autowired ScoreCalculatingService scoreCalculatingService;
 
-    @GetMapping("/network")
-    @ResponseBody
-    public Map<String, Object> getNetworkScoreForKeyword(@RequestParam String keyword) {
-        int networkScore = scoreCalculatingService.calculateNetworkScoreForKeyword(keyword);
-        return createKeywordAndScoreMap(keyword, networkScore);
-    }
-
     @GetMapping("/estimate")
     @ResponseBody
     public Map<String, Object> getSearchVolumeScoreForKeyword(@RequestParam String keyword) {
         int estimatedScore = scoreCalculatingService.calculateSearchVolumeScoreForKeyword(keyword);
         return createKeywordAndScoreMap(keyword, estimatedScore);
+    }
+
+    @GetMapping("/network")
+    @ResponseBody
+    public Map<String, Object> getNetworkScoreForKeyword(@RequestParam String keyword) {
+        int networkScore = scoreCalculatingService.calculateNetworkScoreForKeyword(keyword);
+        return createKeywordAndScoreMap(keyword, networkScore);
     }
 
     private Map<String, Object> createKeywordAndScoreMap(String keyword, int estimatedSearchScore) {
