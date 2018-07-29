@@ -2,7 +2,6 @@ package com.joshwindels.searchvolumescorer.volumescorer;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,32 +12,31 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class VolumeScoringController {
+public class KeywordScoringController {
 
-
-    private final int SEARCH_DEPTH = 2;
     private final String KEYWORD_KEY = "keyword";
     private final String SCORE_KEY = "score";
 
-    @Autowired
-    ResultBuildingService resultBuildingService;
+    @Autowired ScoreCalculatingService scoreCalculatingService;
 
-    @Autowired
-    ScoringService scoringService;
+    @GetMapping("/network")
+    @ResponseBody
+    public Map<String, Object> getNetworkScoreForKeyword(@RequestParam String keyword) {
+        int networkScore = scoreCalculatingService.calculateNetworkScoreForKeyword(keyword);
+        return createKeywordAndScoreMap(keyword, networkScore);
+    }
 
     @GetMapping("/estimate")
     @ResponseBody
-    public Map<String, Object> estimateScoreForKeyword(@RequestParam String keyword) {
-        List<SearchResult> searchResults
-                = resultBuildingService.getResultsTreeForKeywordWithDepth(keyword, SEARCH_DEPTH);
-        int keywordScore = scoringService.getLeafCountScoreFromResults(searchResults);
-        return createKeywordAndScoreMap(keyword, keywordScore);
+    public Map<String, Object> getSearchVolumeScoreForKeyword(@RequestParam String keyword) {
+        int estimatedScore = scoreCalculatingService.calculateSearchVolumeScoreForKeyword(keyword);
+        return createKeywordAndScoreMap(keyword, estimatedScore);
     }
 
-    private Map<String, Object> createKeywordAndScoreMap(String keyword, int keywordScore) {
+    private Map<String, Object> createKeywordAndScoreMap(String keyword, int estimatedSearchScore) {
         Map<String, Object> results = new LinkedHashMap<>();
         results.put(KEYWORD_KEY, keyword);
-        results.put(SCORE_KEY, keywordScore);
+        results.put(SCORE_KEY, estimatedSearchScore);
         return results;
     }
 

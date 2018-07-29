@@ -3,7 +3,6 @@ package com.joshwindels.searchvolumescorer.volumescorer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,38 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ResultBuildingService {
+public class SearchResultService {
 
     private final String AMAZON_AUTOCOMPLETE_URL
             = "http://completion.amazon.com/search/complete?search-alias=aps&client=amazon-search-ui&mkt=1&q=";
 
-    public List<SearchResult> getResultsTreeForKeywordWithDepth(String keyword, int depthToTraverse) {
-        List<SearchResult> resultSet = createResultTreeForRootKeyword(keyword);
-        for (int currentLevel = 1; currentLevel < depthToTraverse; currentLevel++) {
-            resultSet.addAll(findNewSearchTermResults(resultSet, currentLevel));
-        }
-        return resultSet;
-    }
-
-    private List<SearchResult> findNewSearchTermResults(List<SearchResult> resultSet, int levelToSearch) {
-        int previousLevel = levelToSearch - 1;
-        return resultSet.stream()
-                .filter(searchResult -> searchResult.getLevel() == previousLevel)
-                .map(SearchResult::getSuggestedTerms)
-                .flatMap(List::stream)
-                .map(searchTerm -> getSearchResultForKeywordAtLevel(searchTerm, levelToSearch))
-                .collect(Collectors.toList());
-    }
-
-    private List<SearchResult> createResultTreeForRootKeyword(String keyword) {
-        List<SearchResult> resultSet = new ArrayList<>();
-        resultSet.add(getSearchResultForKeywordAtLevel(keyword, 0));
-        return resultSet;
-    }
-
-    private SearchResult getSearchResultForKeywordAtLevel(String keyword, int level) {
+    public SearchResult getSearchResultForKeyword(String keyword) {
         ResponseEntity<String> response = getResponseFromKeywordRequest(keyword);
-        return new SearchResult(level, getSearchTermFromResponse(response), getSuggestedTerms(response));
+        return new SearchResult(getSearchTermFromResponse(response), getSuggestedTermsFromResponse(response));
     }
 
     private ResponseEntity<String> getResponseFromKeywordRequest(String keyword) {
@@ -64,7 +39,7 @@ public class ResultBuildingService {
         }
     }
 
-    private List<String> getSuggestedTerms(ResponseEntity<String> response) {
+    private List<String> getSuggestedTermsFromResponse(ResponseEntity<String> response) {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode suggestedTerms;
         try {
