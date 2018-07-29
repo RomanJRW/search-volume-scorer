@@ -32,4 +32,14 @@ public class KeywordScoringControllerTest {
         assertEquals(54, actualResultsMap.get(SCORE_KEY));
     }
 
+    @Test
+    public void givenKeyword_whenCalculatingSearchVolumeScoreForKeyword_parameterisedMapIsReturned() {
+        when(scoreCalculatingService.calculateSearchVolumeScoreForKeyword(KEYWORD)).thenReturn(79);
+
+        Map<String, Object> actualResultsMap = keywordScoringController.getSearchVolumeScoreForKeyword(KEYWORD);
+
+        assertEquals(KEYWORD, actualResultsMap.get(KEYWORD_KEY));
+        assertEquals(79, actualResultsMap.get(SCORE_KEY));
+    }
+
 }

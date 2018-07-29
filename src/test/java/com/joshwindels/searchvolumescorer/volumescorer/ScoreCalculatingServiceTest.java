@@ -52,4 +52,29 @@ public class ScoreCalculatingServiceTest {
         scoreCalculatingService.calculateNetworkScoreForKeyword(KEYWORD);
     }
 
+    @Test
+    public void givenKeyword_whenCalculatingSearchVolumeScore_thenScoreIsReturned() {
+        when(searchResultService.getSearchResultForKeyword(KEYWORD))
+                .thenReturn(new SearchResult(KEYWORD, Arrays.asList(KEYWORD, "linux computer", "linux book")));
+        String shortenedTerm = "linu";
+        when(searchResultService.getSearchResultForKeyword(shortenedTerm))
+                .thenReturn(new SearchResult(shortenedTerm, Arrays.asList()));
+
+        int actualScore = scoreCalculatingService.calculateSearchVolumeScoreForKeyword(KEYWORD);
+
+        assertEquals(20, actualScore);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void givenNullKeyword_whenCalculatingSearchVolumeScore_thenNullPointerExceptionThrown() {
+        scoreCalculatingService.calculateSearchVolumeScoreForKeyword(null);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void givenKeyword_whenCalculatingSearchVolumekScoreAndSearchResultServiceThrowsRuntimeException_thenRuntimeExceptionThrown() {
+        when(searchResultService.getSearchResultForKeyword(KEYWORD)).thenThrow(RuntimeException.class);
+
+        scoreCalculatingService.calculateSearchVolumeScoreForKeyword(KEYWORD);
+    }
+
 }
