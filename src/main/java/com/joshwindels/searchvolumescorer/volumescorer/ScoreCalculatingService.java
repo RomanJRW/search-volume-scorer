@@ -23,16 +23,20 @@ public class ScoreCalculatingService {
     }
 
     public int calculateSearchVolumeScoreForKeyword(String keyword) {
-        double lengthWeighting = 100.00 / keyword.length();
+        double termLengthWeight = 100.00 / keyword.length();
         double searchVolumeScore = 0;
 
-        SearchResult initialResult = searchResultService.getSearchResultForKeyword(keyword);
-        List<String> terms = initialResult.getSuggestedTerms();
-        if (terms.contains(initialResult.getSearchTerm())) {
-            double indexMultiplier = (10 - terms.indexOf(initialResult.getSearchTerm())) / 10;
-            searchVolumeScore += lengthWeighting * indexMultiplier;
+        String searchTerm = keyword;
+        while (searchTerm.length() > 0) {
+            List<String> termsFound = searchResultService.getSearchResultForKeyword(searchTerm).getSuggestedTerms();
+            if (termsFound.contains(keyword)) {
+                double indexMultiplier = (10 - termsFound.indexOf(keyword)) / 10;
+                searchVolumeScore += termLengthWeight * indexMultiplier;
+                searchTerm = searchTerm.substring(0, searchTerm.length() - 1);
+            } else {
+                break;
+            }
         }
-
         return (int) Math.round(searchVolumeScore);
     }
 }
