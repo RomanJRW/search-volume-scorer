@@ -30,7 +30,7 @@ public class ScoreCalculatingService {
         while (searchTerm.length() > 0) {
             List<String> termsFound = searchResultService.getSearchResultForKeyword(searchTerm).getSuggestedTerms();
             if (termsFound.contains(keyword)) {
-                double indexMultiplier = (10 - termsFound.indexOf(keyword)) / 10;
+                double indexMultiplier = (10.0 - termsFound.indexOf(keyword)) / 10;
                 searchVolumeScore += keywordLengthWeighting * indexMultiplier;
                 searchTerm = searchTerm.substring(0, searchTerm.length() - 1);
             } else {
