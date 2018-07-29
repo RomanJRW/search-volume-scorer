@@ -3,6 +3,7 @@ package com.joshwindels.searchvolumescorer.volumescorer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +17,7 @@ public class KeywordScoringController {
 
     private final String KEYWORD_KEY = "keyword";
     private final String SCORE_KEY = "score";
+    private final String TERMS_KEY = "related terms";
 
     @Autowired ScoreCalculatingService scoreCalculatingService;
 
@@ -33,10 +35,24 @@ public class KeywordScoringController {
         return createKeywordAndScoreMap(keyword, networkScore);
     }
 
+    @GetMapping("/terms")
+    @ResponseBody
+    public Map<String, Object> getRelatedTermsForKeyword(@RequestParam String keyword) {
+        Set<String> relatedTerms = scoreCalculatingService.getRelatedTermsForKeyword(keyword);
+        return createKeywordAndTermsMap(keyword, relatedTerms);
+    }
+
     private Map<String, Object> createKeywordAndScoreMap(String keyword, int estimatedSearchScore) {
         Map<String, Object> results = new LinkedHashMap<>();
         results.put(KEYWORD_KEY, keyword);
         results.put(SCORE_KEY, estimatedSearchScore);
+        return results;
+    }
+
+    private Map<String, Object> createKeywordAndTermsMap(@RequestParam String keyword, Set<String> relatedTerms) {
+        Map<String, Object> results = new LinkedHashMap<>();
+        results.put(KEYWORD_KEY, keyword);
+        results.put(TERMS_KEY, relatedTerms);
         return results;
     }
 
